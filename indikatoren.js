@@ -1,6 +1,6 @@
 /**
  * indikatoren.js — Agenda Austria Dashboard
- * Zuletzt gespeichert: 11.6.2026, 08:19:45
+ * Zuletzt gespeichert: 11.6.2026, 08:29:19
  *
  * Score: ≥60 grün · 45–59 gelb · <45 rot
  */
@@ -16,7 +16,7 @@ const INDIKATOREN = {
 
       {
         label:       "Bevölkerung",
-        value:       "19,19 Mio.",
+        value:       "9,19 Mio.",
         data_period: "31.10.2024",
         score:       52,
         source_name: "Statistik Austria",
