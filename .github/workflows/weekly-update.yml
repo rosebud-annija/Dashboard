@@ -1,0 +1,54 @@
+name: Wöchentliches Daten-Update
+
+on:
+  schedule:
+    # Jeden Montag 06:00 UTC (= 07:00 oder 08:00 Wien je nach Sommer-/Winterzeit)
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry Run — nur ausgeben, nicht committen'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: write
+
+jobs:
+  update-indicators:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Node.js 20 einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Indikatoren aktualisieren
+        run: node scripts/update-indicators.mjs
+
+      - name: Änderungen prüfen
+        id: changes
+        run: |
+          if git diff --quiet indikatoren.js; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "Keine Änderungen an indikatoren.js"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Änderungen gefunden:"
+            git diff --stat indikatoren.js
+          fi
+
+      - name: Änderungen committen
+        if: steps.changes.outputs.changed == 'true' && github.event.inputs.dry_run != 'true'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          DATE=$(date '+%d.%m.%Y')
+          git add indikatoren.js
+          git commit -m "data: Automatisches Daten-Update ${DATE}"
+          git push

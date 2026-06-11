@@ -111,14 +111,17 @@ const QUELLEN = [
   },
 
   {
-    label:      'Industriestrompreis',
-    typ:        'manuell',
-    quelle_url: 'https://www.wko.at/oe/news/medienservice-industriestrompreis-rasch-umsetzen',
-    hinweis:    'Strompreis Industrieverbraucher Band IC (mittel) · Eurostat nrg_pc_205 · halbjährlich',
-    // Zum automatischen Abruf wechseln:
-    // typ:       'eurostat',
-    // datensatz: 'nrg_pc_205',
-    // parameter: { geo: 'AT', consom: 'IC', currency: 'EUR', tax: 'X_TAX', unit: 'KWH' },
+    label:         'Industriestrompreis',
+    typ:           'eurostat',
+    datensatz:     'nrg_pc_205',
+    parameter:     { geo: 'AT', nrg_cons: 'MWH2000-19999', currency: 'EUR', tax: 'X_TAX', unit: 'KWH' },
+    dezimal:       2,
+    einheit:       ' ct/kWh',
+    hoeher_besser: false,
+    reihen:        6,
+    zeitformat:    'monat',
+    untertitel:    'Band IC, ohne Steuern · Österreich',
+    wert_faktor:   100,
   },
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -126,17 +129,16 @@ const QUELLEN = [
   // ─────────────────────────────────────────────────────────────────────────────
 
   {
-    label:      'Jugend-ALQ',
-    typ:        'manuell',
-    quelle_url: 'https://ec.europa.eu/eurostat/databrowser/view/une_rt_a',
-    hinweis:    'Jugendarbeitslosenquote <25 Jahre, ILO-Methode · Eurostat une_rt_a',
-    // Zum automatischen Abruf wechseln:
-    // typ:           'eurostat',
-    // datensatz:     'une_rt_a',
-    // parameter:     { geo: 'AT', sex: 'T', age: 'Y15-24', unit: 'PC_ACT' },
-    // dezimal:       1,
-    // einheit:       ' %',
-    // hoeher_besser: false,
+    label:         'Jugend-ALQ',
+    typ:           'eurostat',
+    datensatz:     'une_rt_a',
+    parameter:     { geo: 'AT', sex: 'T', age: 'Y15-24', unit: 'PC_ACT' },
+    dezimal:       1,
+    einheit:       ' %',
+    hoeher_besser: false,
+    reihen:        8,
+    zeitformat:    'jahr',
+    untertitel:    'Unter 25 Jahre, ILO-Methode · Österreich',
   },
 
   {
@@ -168,17 +170,16 @@ const QUELLEN = [
   },
 
   {
-    label:      'Teilzeitquote',
-    typ:        'manuell',
-    quelle_url: 'https://ec.europa.eu/eurostat/databrowser/view/lfsa_eppga',
-    hinweis:    'Anteil Teilzeitbeschäftigte an allen Beschäftigten · Eurostat lfsa_eppga · jährlich',
-    // Zum automatischen Abruf:
-    // typ:           'eurostat',
-    // datensatz:     'lfsa_eppga',
-    // parameter:     { geo: 'AT', sex: 'T', unit: 'PC' },
-    // dezimal:       1,
-    // einheit:       ' %',
-    // hoeher_besser: false,
+    label:         'Teilzeitquote',
+    typ:           'eurostat',
+    datensatz:     'lfsa_eppga',
+    parameter:     { geo: 'AT', sex: 'T', unit: 'PC' },
+    dezimal:       1,
+    einheit:       ' %',
+    hoeher_besser: false,
+    reihen:        8,
+    zeitformat:    'jahr',
+    untertitel:    'Alle Beschäftigten · Österreich',
   },
 
   {
@@ -189,17 +190,16 @@ const QUELLEN = [
   },
 
   {
-    label:      'Arbeitskosten / Std.',
-    typ:        'manuell',
-    quelle_url: 'https://ec.europa.eu/eurostat/databrowser/view/lc_lci_r2_q',
-    hinweis:    'Arbeitskosten je geleistete Stunde, Gesamtwirtschaft · Eurostat lc_lci_r2_q · quartalsweise',
-    // Zum automatischen Abruf:
-    // typ:           'eurostat',
-    // datensatz:     'lc_lci_r2_q',
-    // parameter:     { geo: 'AT', nace_r2: 'B-N', lcstruct: 'D1-D4', unit: 'EUR' },
-    // dezimal:       1,
-    // einheit:       ' €',
-    // hoeher_besser: false,
+    label:         'Arbeitskosten / Std.',
+    typ:           'eurostat',
+    datensatz:     'lc_lci_r2_q',
+    parameter:     { geo: 'AT', nace_r2: 'B-N', lcstruct: 'D1-D4', unit: 'EUR' },
+    dezimal:       1,
+    einheit:       ' €',
+    hoeher_besser: false,
+    reihen:        8,
+    zeitformat:    'monat',
+    untertitel:    'Gesamtwirtschaft · Österreich',
   },
 
   {
@@ -266,17 +266,16 @@ const QUELLEN = [
   },
 
   {
-    label:      'HVPI',
-    typ:        'manuell',
-    quelle_url: 'https://www.statistik.at/statistiken/preise-und-preismessung/verbraucherpreisindex-vpi/vpi-hvpi-und-db',
-    hinweis:    'Harmonisierter VPI (EU-Vergleichsmaß) · Eurostat prc_hicp_manr · monatlich',
-    // Zum automatischen Abruf:
-    // typ:           'eurostat',
-    // datensatz:     'prc_hicp_manr',
-    // parameter:     { geo: 'AT', coicop: 'CP00', unit: 'RCH_A' },
-    // dezimal:       1,
-    // einheit:       ' %',
-    // hoeher_besser: false,
+    label:         'HVPI',
+    typ:           'eurostat',
+    datensatz:     'prc_hicp_manr',
+    parameter:     { geo: 'AT', coicop: 'CP00', unit: 'RCH_A' },
+    dezimal:       1,
+    einheit:       ' %',
+    hoeher_besser: false,
+    reihen:        12,
+    zeitformat:    'monat',
+    untertitel:    'Jahresrate · Österreich',
   },
 
   {
@@ -326,17 +325,16 @@ const QUELLEN = [
   },
 
   {
-    label:      'Abgabenquote',
-    typ:        'manuell',
-    quelle_url: 'https://ec.europa.eu/eurostat/databrowser/view/gov_10a_taxag',
-    hinweis:    'Steuer- und Abgabenquote in % des BIP · Eurostat gov_10a_taxag · jährlich',
-    // Zum automatischen Abruf:
-    // typ:           'eurostat',
-    // datensatz:     'gov_10a_taxag',
-    // parameter:     { geo: 'AT', sector: 'S13', unit: 'PC_GDP', na_item: 'D2_D5_D91_D61_D99' },
-    // dezimal:       1,
-    // einheit:       ' % BIP',
-    // hoeher_besser: false,
+    label:         'Abgabenquote',
+    typ:           'eurostat',
+    datensatz:     'gov_10a_taxag',
+    parameter:     { geo: 'AT', sector: 'S13', unit: 'PC_GDP', na_item: 'D2_D5_D91_D61_D99' },
+    dezimal:       1,
+    einheit:       ' % BIP',
+    hoeher_besser: false,
+    reihen:        8,
+    zeitformat:    'jahr',
+    untertitel:    'Steuer- und Abgabenquote · Österreich',
   },
 
   {

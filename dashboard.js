@@ -950,7 +950,8 @@ async function refreshLiveData() {
 
       if (!q.nur_chart) {
         var latest = series[series.length - 1];
-        var formatted = formatNumberAT(latest.value, q.dezimal != null ? q.dezimal : 1)
+        var displayValue = q.wert_faktor ? latest.value * q.wert_faktor : latest.value;
+        var formatted = formatNumberAT(displayValue, q.dezimal != null ? q.dezimal : 1)
                       + (q.einheit ? '<span class="unit">' + q.einheit + '</span>' : '');
         var fallbackSource = (indiMap[q.label] || {}).source_name || '';
         setKpiByLabel(q.label, formatted, 'Letzte verfügbare Eurostat-Meldung', q.untertitel || fallbackSource, status);
