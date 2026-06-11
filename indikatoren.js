@@ -1,6 +1,6 @@
 /**
  * indikatoren.js — Agenda Austria Dashboard
- * Zuletzt gespeichert: 11.6.2026, 08:17:53
+ * Zuletzt gespeichert: 11.6.2026, 08:19:45
  *
  * Score: ≥60 grün · 45–59 gelb · <45 rot
  */
@@ -28,11 +28,11 @@ const INDIKATOREN = {
 
       {
         label:       "BIP-Wachstum real",
-        value:       "+0,6 %",
-        data_period: "2025",
+        value:       "0,2%",
+        data_period: "1 Quartal 2026",
         score:       35,
-        source_name: "OeNB",
-        source_url:  "https://www.oenb.at/isawebstat/stabfrage/createReport?lang=EN&report=7.7",
+        source_name: "Statistik Austria",
+        source_url:  "https://www.statistik.at/statistiken/volkswirtschaft-und-oeffentliche-finanzen/volkswirtschaftliche-gesamtrechnungen/bruttoinlandsprodukt-und-hauptaggregate",
         eurostat_id: "tec00115",
         update:      "jährlich",
         notes:       "Reales BIP-Wachstum Österreich 2025 · OeNB Statistik Report 7.7 · bestätigt Mai 2026",
