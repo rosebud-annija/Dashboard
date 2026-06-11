@@ -5,10 +5,18 @@
  * Holt aktuelle Werte von Eurostat und Statistik Austria,
  * schreibt sie in indikatoren.js zurück.
  *
- * Quellen: Eurostat API (kostenlos, kein Auth) für ~20 Indikatoren.
- *          Statistik Austria HTML für Bevölkerung, Insolvenzen, Arbeitsstunden.
- *          Manuell bleiben: Budgetvollzug (BMF), Pensionslücke, Direktinvestitionen,
- *                           Business Climate, Unselbst. Beschäftigte, Reallöhne.
+ * Quellen: Eurostat API (kostenlos, kein Auth) für alle automatisierten Indikatoren.
+ *          Statistik Austria HTML für Insolvenzen, Arbeitsstunden (kann fehlschlagen).
+ *
+ * Wirtschaft — Eurostat:
+ *   Bevölkerung (demo_gind), Exporte/Importe (nama_10_gdp P6/P7),
+ *   BIP real (tec00115), BIP nominal (namq_10_gdp), BIP pro Kopf (nama_10_pc),
+ *   Lohnstückkosten (namq_10_lp_ulc), Bruttoanlageinvestitionen (nama_10_gdp P51G),
+ *   Industriestrompreis (nrg_pc_205)
+ *
+ * Manuell bleiben: Budgetvollzug (BMF), Pensionslücke, Direktinvestitionen (OeNB),
+ *                  Business Climate (WIFO), Unselbst. Beschäftigte (AMS), Reallöhne,
+ *                  Insolvenzen (Stat. Austria HTML oft fehlerhaft).
  *
  * Node 18+ vorausgesetzt (built-in fetch).
  * Aufruf: node scripts/update-indicators.mjs
@@ -316,32 +324,45 @@ await tryUpdate('Energiepreise', async () => {
   return r ? { value: pctSign(r.value), period: monthLabel(r[timeDimOf(j)]) + ' ggü. Vj.' } : null;
 });
 
+// Bevölkerung via Eurostat demo_gind (ersetzt Statistik Austria HTML-Scraping)
+// indic_de=JAN = Bevölkerungsstand am 1. Jänner
+await tryUpdate('Bevölkerung', async () => {
+  const j = await fetchEurostat('demo_gind', { geo: 'AT', indic_de: 'JAN' });
+  const r = latestEurostat(decodeEurostat(j));
+  if (!r) return null;
+  const mio = r.value / 1_000_000;
+  return { value: fmtDE(mio, 2) + ' Mio.', period: 'Jan. ' + r[timeDimOf(j)] };
+});
+
+// Exporte (Waren + Dienstleistungen, absolut) via Eurostat nama_10_gdp
+// na_item=P6 = Exports of goods and services, CP_MEUR = current prices, millions EUR
+await tryUpdate('Exporte (Waren)', async () => {
+  const j = await fetchEurostat('nama_10_gdp', { geo: 'AT', na_item: 'P6', unit: 'CP_MEUR' });
+  const r = latestEurostat(decodeEurostat(j));
+  if (!r) return null;
+  const mrd = Math.round(r.value / 1000);
+  return { value: FMT.format(mrd) + ' Mrd. €', period: r[timeDimOf(j)] };
+});
+
+// Importe (Waren + Dienstleistungen, absolut) via Eurostat nama_10_gdp
+// na_item=P7 = Imports of goods and services
+await tryUpdate('Importe', async () => {
+  const j = await fetchEurostat('nama_10_gdp', { geo: 'AT', na_item: 'P7', unit: 'CP_MEUR' });
+  const r = latestEurostat(decodeEurostat(j));
+  if (!r) return null;
+  const mrd = Math.round(r.value / 1000);
+  return { value: FMT.format(mrd) + ' Mrd.', period: r[timeDimOf(j)] };
+});
+
+// Business Climate Indicator (WIFO-Konjunkturtest) — kein passender open API verfügbar.
+// Eurostat ei_bsco_m hat für AT nur Konsumenten-Umfragen (andere Skala), bop_fdi6_pos zu groß (413).
+// → Manuell im Admin Panel pflegen.
+
 // ════════════════════════════════════════════════════════════════════
 // STATISTIK AUSTRIA
 // ════════════════════════════════════════════════════════════════════
 
 console.log('\n── Statistik Austria ─────────────────────────────────');
-
-await tryUpdate('Bevölkerung', async () => {
-  const html = await fetchHtml('https://www.statistik.at/statistiken/bevoelkerung-und-soziales/bevoelkerung/bevoelkerungsstand/bevoelkerung-gemaess-finanzausgleichsgesetz');
-  // Suche nach Muster wie "9.145.090" oder "9,14 Mio." im Text
-  const r = extractNumber(html,
-    ['bevölkerung', 'einwohner', 'finanzausgleich', 'gesamtbevölkerung'],
-    /\b9[\.,]\d{3}[\.,]\d{3}\b|\b9[,.]?\d{1,2}\s*Mio\b/i
-  );
-  if (!r) return null;
-  // Normalisiere auf Mio.
-  let mio;
-  if (r.raw > 1000000) {
-    mio = r.raw / 1000000;
-  } else {
-    mio = r.raw;
-  }
-  // Stichtag aus Context extrahieren
-  const dateMatch = r.context.match(/\b\d{1,2}\.\d{2}\.20\d{2}\b|\b31\.10\.20\d{2}\b/);
-  const period = dateMatch ? dateMatch[0] : new Date().getFullYear().toString();
-  return { value: fmtDE(mio, 2) + ' Mio.', period };
-});
 
 await tryUpdate('Insolvenzen', async () => {
   const html = await fetchHtml('https://www.statistik.at/statistiken/industrie-bau-handel-und-dienstleistungen/unternehmensdemografie/registrierungen-und-insolvenzen');
