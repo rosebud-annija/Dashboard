@@ -1,6 +1,6 @@
 /**
  * indikatoren.js — Agenda Austria Dashboard
- * Zuletzt gespeichert: 11.6.2026, automatisch aktualisiert
+ * Zuletzt gespeichert: 11.6.2026, 09:30:28
  *
  * Score: ≥60 grün · 45–59 gelb · <45 rot
  */
@@ -20,7 +20,7 @@ const INDIKATOREN = {
         data_period: "Apr. 2026",
         score:       52,
         source_name: "Statistik Austria",
-        source_url:  "https://www.statistik.at/statistiken/bevoelkerung-und-soziales/bevoelkerung/bevoelkerungsstand/bevoelkerung-gemaess-finanzausgleichsgesetz",
+        source_url:  "https://www.statistik.at/statistiken/bevoelkerung-und-soziales/bevoelkerung/bevoelkerungsstand/bevoelkerung-zu-jahres-/-quartalsanfang",
         eurostat_id: "",
         update:      "monatlich",
         notes:       "Bevölkerungsstand gemäß Finanzausgleichsgesetz · Zentrales Melderegister",
