@@ -1,6 +1,6 @@
 /**
  * indikatoren.js — Agenda Austria Dashboard
- * Zuletzt gespeichert: 11.6.2026, 09:09:59
+ * Zuletzt gespeichert: 11.6.2026, automatisch aktualisiert
  *
  * Score: ≥60 grün · 45–59 gelb · <45 rot
  */
@@ -16,8 +16,8 @@ const INDIKATOREN = {
 
       {
         label:       "Bevölkerung",
-        value:       "19,19 Mio.",
-        data_period: "31.10.2024",
+        value:       "9,22 Mio.",
+        data_period: "Apr. 2026",
         score:       52,
         source_name: "Statistik Austria",
         source_url:  "https://www.statistik.at/statistiken/bevoelkerung-und-soziales/bevoelkerung/bevoelkerungsstand/bevoelkerung-gemaess-finanzausgleichsgesetz",
@@ -28,32 +28,32 @@ const INDIKATOREN = {
 
       {
         label:       "BIP-Wachstum real",
-        value:       "0,2%",
-        data_period: "1 Quartal 2026",
+        value:       "+0,8 %",
+        data_period: "2025",
         score:       35,
         source_name: "Statistik Austria",
         source_url:  "https://www.statistik.at/statistiken/volkswirtschaft-und-oeffentliche-finanzen/volkswirtschaftliche-gesamtrechnungen/bruttoinlandsprodukt-und-hauptaggregate",
         eurostat_id: "tec00115",
         update:      "jährlich",
-        notes:       "Reales BIP-Wachstum Österreich 2025 · OeNB Statistik Report 7.7 · bestätigt Mai 2026",
+        notes:       "Reales BIP-Wachstum Österreich 2025 · Eurostat tec00115 · bestätigt Jun 2026",
       },
 
       {
         label:       "BIP nominal",
-        value:       "+3,7 %",
-        data_period: "Q4 2025",
+        value:       "+2,8 %",
+        data_period: "Q1 2026",
         score:       42,
         source_name: "OeNB",
         source_url:  "https://www.oenb.at/isawebstat/stabfrage/createReport?lang=EN&report=7.3",
         eurostat_id: "",
         update:      "quartalsweise",
-        notes:       "Nominales BIP-Wachstum ggü. Vorjahr · OeNB Statistik Report 7.3 · Q4 2025: +3,7 % yoy · Stand 30.04.2026",
+        notes:       "Nominales BIP-Wachstum ggü. Vorjahr · OeNB Statistik Report 7.3 · Q1 2026: +2,8 % yoy",
       },
 
       {
         label:       "BIP pro Kopf",
-        value:       "53.834 €",
-        data_period: "2024",
+        value:       "55.870 €",
+        data_period: "2025",
         score:       58,
         source_name: "OeNB",
         source_url:  "https://www.oenb.at/isawebstat/stabfrage/createReport?lang=DE&report=7.1",
@@ -88,14 +88,14 @@ const INDIKATOREN = {
 
       {
         label:       "Insolvenzen",
-        value:       "1.669",
-        data_period: "Q4 2025",
+        value:       "1.741",
+        data_period: "Q1 2026",
         score:       32,
         source_name: "Statistik Austria",
         source_url:  "https://www.statistik.at/statistiken/industrie-bau-handel-und-dienstleistungen/unternehmensdemografie/registrierungen-und-insolvenzen",
         eurostat_id: "",
         update:      "quartalsweise",
-        notes:       "Unternehmensinsolvenzen Q4 2025: 1.669 (−2,2 % ggü. Q3 2025) · Statistik Austria Unternehmensdemografie",
+        notes:       "Unternehmensinsolvenzen Q1 2026: 1.741 (−2,5 % ggü. Q1 2025, vorläufig) · Statistik Austria Unternehmensdemografie",
       },
 
       {
@@ -136,26 +136,26 @@ const INDIKATOREN = {
 
       {
         label:       "Bruttoanlageinvestitionen / Abschreibungen",
-        value:       "22,1 % BIP",
-        data_period: "2024",
+        value:       "25,7 % BIP",
+        data_period: "2025",
         score:       35,
-        source_name: "OeNB",
-        source_url:  "https://www.oenb.at/isawebstat/stabfrage/createReport?lang=DE&report=9999",
-        eurostat_id: "",
+        source_name: "Eurostat",
+        source_url:  "https://ec.europa.eu/eurostat/databrowser/view/nama_10_gdp",
+        eurostat_id: "nama_10_gdp",
         update:      "jährlich",
-        notes:       "Bruttoanlageinvestitionsquote in % des BIP · OeNB Statistik Report 9999",
+        notes:       "Bruttoanlageinvestitionsquote in % des BIP · Eurostat nama_10_gdp P51G 2025",
       },
 
       {
         label:       "Industriestrompreis",
-        value:       "18,75 ct/kWh",
-        data_period: "2025",
+        value:       "5,88 ct/kWh",
+        data_period: "H2 2025",
         score:       30,
-        source_name: "WKO",
-        source_url:  "https://www.wko.at/oe/news/medienservice-industriestrompreis-rasch-umsetzen",
+        source_name: "Eurostat (nrg_pc_205)",
+        source_url:  "https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Electricity_price_statistics",
         eurostat_id: "nrg_pc_205",
         update:      "halbjährlich",
-        notes:       "Strompreis für mittlere Industrieverbraucher (Band IC) · WKO-Quelle · Eurostat nrg_pc_205",
+        notes:       "Strompreis für mittlere Industrieverbraucher (Band IC), excl. Steuern · Eurostat nrg_pc_205 H2 2025",
       },
 
     ]
@@ -170,14 +170,14 @@ const INDIKATOREN = {
 
       {
         label:       "Jugend-ALQ",
-        value:       "11,1 %",
-        data_period: "Feb 2026",
+        value:       "11,5 %",
+        data_period: "2025",
         score:       38,
         source_name: "Eurostat",
         source_url:  "https://ec.europa.eu/eurostat/databrowser/view/une_rt_a",
         eurostat_id: "une_rt_a",
-        update:      "monatlich",
-        notes:       "Jugendarbeitslosenquote <25 Jahre, ILO-Methode, Eurostat",
+        update:      "jährlich",
+        notes:       "Jugendarbeitslosenquote <25 Jahre, ILO-Methode, Eurostat · Jahreswert 2025",
       },
 
       {
@@ -206,14 +206,14 @@ const INDIKATOREN = {
 
       {
         label:       "ALQ Eurostat (ILO)",
-        value:       "5,8 %",
-        data_period: "Feb 2026",
+        value:       "5,7 %",
+        data_period: "Apr. 2026",
         score:       40,
         source_name: "Eurostat",
         source_url:  "https://ec.europa.eu/eurostat/databrowser/view/une_rt_m",
         eurostat_id: "une_rt_m",
         update:      "monatlich",
-        notes:       "Arbeitslosenquote nach ILO-Methode, Eurostat",
+        notes:       "Arbeitslosenquote nach ILO-Methode, Eurostat · April 2026: 5,7 % (saisonbereinigt)",
       },
 
       {
@@ -266,14 +266,14 @@ const INDIKATOREN = {
 
       {
         label:       "Geleistete Arbeitsstunden",
-        value:       "6,88 Mrd. Std.",
-        data_period: "2024",
+        value:       "6,90 Mrd. Std.",
+        data_period: "2025",
         score:       45,
-        source_name: "Statistik Austria / Eurostat",
-        source_url:  "https://www.statistik.at/statistiken/arbeitsmarkt/arbeitszeit/geleistete-arbeitsstunden",
+        source_name: "Statistik Austria",
+        source_url:  "https://www.statistik.at/statistiken/arbeitsmarkt/arbeitszeit/arbeitszeit-arbeitsvolumen-ueberstunden",
         eurostat_id: "",
         update:      "jährlich",
-        notes:       "Geleistete Arbeitsstunden gesamt (Mikrozensus)",
+        notes:       "Geleistete Arbeitsstunden gesamt (Mikrozensus) · 2025: 6,90 Mrd. Std.",
       },
 
     ]
@@ -288,14 +288,14 @@ const INDIKATOREN = {
 
       {
         label:       "VPI / Inflation",
-        value:       "2,2 %",
-        data_period: "Feb 2026",
-        score:       52,
+        value:       "3,7 %",
+        data_period: "Mai 2026",
+        score:       40,
         source_name: "Statistik Austria",
         source_url:  "https://www.statistik.at/statistiken/wirtschaft/preise-und-preisindizes/verbraucherpreisindex-vpi-hvpi",
         eurostat_id: "prc_hicp_minr",
         update:      "monatlich",
-        notes:       "VPI-Inflationsrate ggü. Vorjahresmonat",
+        notes:       "VPI-Inflationsrate ggü. Vorjahresmonat · Mai 2026: 3,7 % (Schnellschätzung)",
       },
 
       {
@@ -370,14 +370,14 @@ const INDIKATOREN = {
 
       {
         label:       "Staatsschuldenquote",
-        value:       "81,5 % BIP",
+        value:       "80,0 % BIP",
         data_period: "2025",
         score:       16,
-        source_name: "AMECO",
-        source_url:  "https://economy-finance.ec.europa.eu/economic-research-and-databases/economic-databases/ameco-database_en",
+        source_name: "Eurostat",
+        source_url:  "https://ec.europa.eu/eurostat/databrowser/view/gov_10dd_edpt1",
         eurostat_id: "gov_10dd_edpt1",
         update:      "jährlich",
-        notes:       "Gesamtstaatliche Schulden in % des BIP (Maastricht-Definition)",
+        notes:       "Gesamtstaatliche Schulden in % des BIP (Maastricht-Definition) · Eurostat gov_10dd_edpt1 2025",
       },
 
       {
@@ -406,14 +406,14 @@ const INDIKATOREN = {
 
       {
         label:       "Abgabenquote",
-        value:       "44,3 % BIP",
+        value:       "43,7 % BIP",
         data_period: "2025",
         score:       16,
-        source_name: "AMECO / Eurostat",
+        source_name: "Eurostat",
         source_url:  "https://ec.europa.eu/eurostat/databrowser/view/gov_10a_taxag",
         eurostat_id: "gov_10a_taxag",
         update:      "jährlich",
-        notes:       "Steuer- und Abgabenquote in % des BIP",
+        notes:       "Steuer- und Abgabenquote in % des BIP · Eurostat gov_10a_taxag 2025: 43,7 %",
       },
 
       {
@@ -430,38 +430,38 @@ const INDIKATOREN = {
 
       {
         label:       "Pensionslücke",
-        value:       "~14 Mrd. €",
-        data_period: "2024 jährl.",
+        value:       "~21 Mrd. €",
+        data_period: "2025 jährl.",
         score:       12,
         source_name: "Agenda Austria",
         source_url:  "https://www.agenda-austria.at/themen/pensionen/",
         eurostat_id: "",
         update:      "jährlich",
-        notes:       "Jährliche Bundeszuschüsse zum Pensionssystem (Agenda Austria)",
+        notes:       "Finanzierungslücke im staatlichen Pensionssystem (Agenda Austria) · 2025: ~21 Mrd. €/Jahr",
       },
 
       {
         label:       "Sozialquote",
-        value:       "30,5 %",
+        value:       "32,7 %",
         data_period: "2024",
         score:       30,
         source_name: "Statistik Austria",
-        source_url:  "https://www.statistik.at/statistiken/bevoelkerung-und-soziales/sozialleistungen",
+        source_url:  "https://www.statistik.at/statistiken/bevoelkerung-und-soziales/sozialleistungen/sozialquote-sozialausgaben-und-finanzierung",
         eurostat_id: "",
         update:      "jährlich",
-        notes:       "Sozialausgaben in % des BIP",
+        notes:       "Sozialausgaben in % des BIP (ESSPROS) · 2024: 32,7 % (+2,1 PP ggü. 2023) · Statistik Austria",
       },
 
       {
         label:       "Staatseinnahmen",
-        value:       "51,1 % BIP",
+        value:       "51,0 % BIP",
         data_period: "2025",
         score:       42,
-        source_name: "AMECO",
-        source_url:  "https://economy-finance.ec.europa.eu/economic-research-and-databases/economic-databases/ameco-database_en",
-        eurostat_id: "",
+        source_name: "Eurostat",
+        source_url:  "https://ec.europa.eu/eurostat/databrowser/view/gov_10a_main",
+        eurostat_id: "gov_10a_main",
         update:      "jährlich",
-        notes:       "Gesamtstaatliche Einnahmen in % des BIP",
+        notes:       "Gesamtstaatliche Einnahmen in % des BIP · Eurostat gov_10a_main TR 2025",
       },
 
       {
