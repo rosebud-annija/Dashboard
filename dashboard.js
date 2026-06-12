@@ -701,9 +701,11 @@ function applyHighlightStyle(card) {
   var fg = useDarkText ? '#14193a' : '#ffffff';
   var muted = useDarkText ? 'rgba(20,25,58,0.62)' : 'rgba(255,255,255,0.78)';
   var chipBg = useDarkText ? 'rgba(20,25,58,0.12)' : 'rgba(255,255,255,0.20)';
+  var border = useDarkText ? 'rgba(20,25,58,0.15)' : 'rgba(255,255,255,0.22)';
   card.style.setProperty('--highlight-bg', bg);
   card.style.setProperty('--highlight-fg', fg);
   card.style.setProperty('--highlight-muted', muted);
+  card.style.setProperty('--highlight-border', border);
   card.style.setProperty('--highlight-shadow', 'rgba(39,52,139,0.18)');
   card.style.setProperty('--highlight-chip-bg', chipBg);
   card.style.setProperty('--highlight-chip-fg', fg);

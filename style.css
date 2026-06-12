@@ -323,6 +323,9 @@ a.kpi-detail:hover { color: var(--hellblau); text-decoration: underline; }
 .is-highlight a.kpi-detail:hover {
   color: var(--highlight-fg, #fff);
 }
+.is-highlight .kpi-badge {
+  background: rgba(255,255,255,0.92) !important;
+}
 .is-highlight .chart-status {
   background: var(--highlight-chip-bg, rgba(255,255,255,0.16)) !important;
   color: var(--highlight-chip-fg, #fff) !important;
@@ -388,11 +391,9 @@ a.kpi-detail:hover { color: var(--hellblau); text-decoration: underline; }
   padding: 3px 9px;
   border-radius: 5px;
 }
-/* score-based chart-status colors removed — category colors below */
-.category-section[data-category="wirtschaft"]  .chart-status { background: rgba(0,159,227,0.12);   color: #009fe3; }
-.category-section[data-category="arbeitsmarkt"] .chart-status { background: rgba(168,119,178,0.14); color: #a877b2; }
-.category-section[data-category="preise"]       .chart-status { background: rgba(0,103,128,0.12);   color: #006780; }
-.category-section[data-category="finanzen"]     .chart-status { background: rgba(202,168,125,0.18); color: #9a7840; }
+.chart-card.bad     .chart-status { background: var(--bad-dim);  color: var(--bad); }
+.chart-card.good    .chart-status { background: var(--good-dim); color: #2a8a68; }
+.chart-card.neutral .chart-status { background: var(--neu-dim);  color: #c28a00; }
 
 /* chart-row inside grid */
 .chart-row {
@@ -1041,39 +1042,38 @@ footer {
 
 /* ── EXPAND IN-PLACE (Option 3) ── */
 
-/* White text when card has a colored background (is-highlight) */
+/* Expand panel on colored is-highlight cards — uses CSS vars set by JS (white for dark bg, dark for light bg) */
 .is-highlight .kpi-expand-panel {
-  border-top-color: rgba(255,255,255,0.25);
+  border-top-color: var(--highlight-border, rgba(255,255,255,0.25));
 }
 .is-highlight .kep-title {
-  color: rgba(255,255,255,0.65);
+  color: var(--highlight-muted, rgba(255,255,255,0.65));
 }
 .is-highlight .kep-text,
-.is-highlight .kep-bar-val {
-  color: #ffffff;
-}
+.is-highlight .kep-bar-val,
 .is-highlight .kep-bar-val.bad,
 .is-highlight .kep-bar-val.good {
-  color: #ffffff;
+  color: var(--highlight-fg, #ffffff);
 }
 .is-highlight .kep-bar-name {
-  color: rgba(255,255,255,0.75);
+  color: var(--highlight-muted, rgba(255,255,255,0.75));
 }
 .is-highlight .kep-bar-track {
-  background: rgba(255,255,255,0.18);
+  background: var(--highlight-border, rgba(255,255,255,0.18));
 }
 .is-highlight .kep-bar-fill,
 .is-highlight .kep-bar-fill.bad,
 .is-highlight .kep-bar-fill.good,
 .is-highlight .kep-bar-fill.neu {
-  background: rgba(255,255,255,0.70);
+  background: var(--highlight-fg, rgba(255,255,255,0.70));
+  opacity: 0.7;
 }
 .is-highlight .kep-close {
-  color: rgba(255,255,255,0.70);
+  color: var(--highlight-muted, rgba(255,255,255,0.70));
 }
 .is-highlight .kep-close:hover {
-  background: rgba(255,255,255,0.15);
-  color: #ffffff;
+  background: var(--highlight-border, rgba(255,255,255,0.15));
+  color: var(--highlight-fg, #ffffff);
 }
 
 .kpi-card {
