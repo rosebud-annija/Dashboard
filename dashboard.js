@@ -687,22 +687,11 @@ function hexLuma(hex) {
   return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
 }
 
-function applyHighlightStyle(card) {
-  if (!card || !card.classList.contains('is-highlight')) return;
-  var key = getStatusKeyFromElement(card);
-  var bg = statusColorHex(key);
-  var useDarkText = false; /* always white text on highlight backgrounds */
-  var fg = '#ffffff';
-  var muted = 'rgba(255,255,255,0.78)';
-  var chipBg = 'rgba(255,255,255,0.20)';
-  var chipFg = fg;
-  card.style.setProperty('--highlight-bg', bg);
-  card.style.setProperty('--highlight-fg', fg);
-  card.style.setProperty('--highlight-muted', muted);
-  card.style.setProperty('--highlight-accent', useDarkText ? 'rgba(255,255,255,0.42)' : 'rgba(255,255,255,0.28)');
-  card.style.setProperty('--highlight-shadow', useDarkText ? 'rgba(20,25,58,0.12)' : 'rgba(39,52,139,0.18)');
-  card.style.setProperty('--highlight-chip-bg', chipBg);
-  card.style.setProperty('--highlight-chip-fg', chipFg);
+var CAT_COLORS = { wirtschaft: '#009fe3', arbeitsmarkt: '#a877b2', preise: '#006780', finanzen: '#caa87d' };
+
+function getCategoryColor(el) {
+  var section = el && el.closest('[data-category]');
+  return section ? (CAT_COLORS[section.dataset.category] || PALETTE[0]) : PALETTE[0];
 }
 
 function ensureBadgeArrow(badge) {
@@ -720,8 +709,7 @@ function applyChartPaletteFromCard(card) {
   if (!canvas) return;
   var chart = Chart.getChart(canvas);
   if (!chart) return;
-  var key = getStatusKeyFromElement(card);
-  var base = statusColorHex(key);
+  var base = getCategoryColor(card);
   var alt = preferredAltColor(base);
   chart.data.datasets.forEach(function(ds, idx) {
     var color = idx === 0 ? base : preferredAltColor(idx === 1 ? base : alt);
@@ -751,7 +739,6 @@ function applyChartPaletteFromCard(card) {
 
 function syncDashboardStyles() {
   document.querySelectorAll('.kpi-badge, .chart-status').forEach(ensureBadgeArrow);
-  document.querySelectorAll('.kpi-card.is-highlight').forEach(applyHighlightStyle);
   document.querySelectorAll('.chart-card').forEach(applyChartPaletteFromCard);
 }
 
