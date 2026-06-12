@@ -6,17 +6,24 @@
  * schreibt sie in indikatoren.js zurück.
  *
  * Quellen: Eurostat API (kostenlos, kein Auth) für alle automatisierten Indikatoren.
- *          Statistik Austria HTML für Insolvenzen, Arbeitsstunden (kann fehlschlagen).
+ *          Statistik Austria HTML für Insolvenzen (kann fehlschlagen).
  *
- * Wirtschaft — Eurostat:
- *   Bevölkerung (demo_gind), Exporte/Importe (nama_10_gdp P6/P7),
- *   BIP real (tec00115), BIP nominal (namq_10_gdp), BIP pro Kopf (nama_10_pc),
- *   Lohnstückkosten (namq_10_lp_ulc), Bruttoanlageinvestitionen (nama_10_gdp P51G),
- *   Industriestrompreis (nrg_pc_205)
+ * Wirtschaft:   Bevölkerung (demo_gind), Exporte/Importe (nama_10_gdp P6/P7),
+ *               BIP real/nominal/Kopf (tec00115, namq_10_gdp, nama_10_pc),
+ *               Lohnstückkosten (namq_10_lp_ulc), Bruttoanlageinvestitionen (nama_10_gdp P51G),
+ *               Industriestrompreis (nrg_pc_205)
+ * Arbeitsmarkt: Unselbst. Beschäftigte (lfsq_egaps), ALQ ILO (une_rt_m),
+ *               Jugend-ALQ (une_rt_a), Teilzeitquote (lfsi_pt_a),
+ *               Geleistete Arbeitsstunden (nama_10_a10_e), Arbeitskosten Index (lc_lci_r2_q)
+ * Preise:       VPI (prc_hicp_manr), HVPI (prc_hicp_manr), Immobilienpreise (prc_hpi_q),
+ *               Mietentwicklung (prc_hicp_manr CP041), Energiepreise (prc_hicp_cann)
+ * Finanzen:     Staatsschulden/-defizit (gov_10dd_edpt1), Staatsquote/-einnahmen/-ausgaben,
+ *               Zinsausgaben, Abgabenquote (gov_10a_main, gov_10a_taxag)
  *
- * Manuell bleiben: Budgetvollzug (BMF), Pensionslücke, Direktinvestitionen (OeNB),
- *                  Business Climate (WIFO), Unselbst. Beschäftigte (AMS), Reallöhne,
- *                  Insolvenzen (Stat. Austria HTML oft fehlerhaft).
+ * Manuell:      Budgetvollzug (BMF), Pensionslücke, Direktinvestitionen (bop_fdi6_pos zu groß),
+ *               Business Climate (WIFO), ALQ national (AMS), Reallöhne (AMECO),
+ *               Arbeitskosten/Std. EUR (kein Eurostat-Dataset), Sozialquote (ESSPROS 404),
+ *               Faktisches Pensionsalter + Steuerkeil (OECD), Insolvenzen (HTML fehlerhaft).
  *
  * Node 18+ vorausgesetzt (built-in fetch).
  * Aufruf: node scripts/update-indicators.mjs
@@ -357,6 +364,61 @@ await tryUpdate('Importe', async () => {
 // Business Climate Indicator (WIFO-Konjunkturtest) — kein passender open API verfügbar.
 // Eurostat ei_bsco_m hat für AT nur Konsumenten-Umfragen (andere Skala), bop_fdi6_pos zu groß (413).
 // → Manuell im Admin Panel pflegen.
+
+// ════════════════════════════════════════════════════════════════════
+// ARBEITSMARKT (Eurostat)
+// ════════════════════════════════════════════════════════════════════
+
+console.log('\n── Arbeitsmarkt ──────────────────────────────────────');
+
+// Unselbst. Beschäftigte via Eurostat LFS quarterly (ersetzt AMS-Manualwert)
+// lfsq_egaps: employees (wstatus=EMP), 15–64, Tsd. Personen
+await tryUpdate('Unselbst. Beschäftigte', async () => {
+  const j = await fetchEurostat('lfsq_egaps', { geo: 'AT', sex: 'T', age: 'Y15-64', wstatus: 'EMP', unit: 'THS_PER' });
+  const r = latestEurostat(decodeEurostat(j));
+  if (!r) return null;
+  const mio = r.value / 1000;
+  return { value: fmtDE(mio, 2) + ' Mio.', period: monthLabel(r[timeDimOf(j)]) };
+});
+
+// Geleistete Arbeitsstunden via Eurostat Volkswirtschaftliche Gesamtrechnungen
+// nama_10_a10_e EMP_DC THS_HW = geleistete Stunden (Tsd.), alle Branchen
+await tryUpdate('Geleistete Arbeitsstunden', async () => {
+  const j = await fetchEurostat('nama_10_a10_e', { geo: 'AT', nace_r2: 'TOTAL', unit: 'THS_HW', na_item: 'EMP_DC' });
+  const r = latestEurostat(decodeEurostat(j));
+  if (!r) return null;
+  const mrd = r.value / 1_000_000;
+  return { value: fmtDE(mrd, 2) + ' Mrd. Std.', period: r[timeDimOf(j)] };
+});
+
+// ════════════════════════════════════════════════════════════════════
+// PREISE (Eurostat)
+// ════════════════════════════════════════════════════════════════════
+
+console.log('\n── Preise ────────────────────────────────────────────');
+
+// Mietentwicklung via Eurostat HVPI CP041 (Tatsächliche Mieten, Jahresrate)
+await tryUpdate('Mietentwicklung', async () => {
+  const j = await fetchEurostat('prc_hicp_manr', { geo: 'AT', coicop: 'CP041', unit: 'RCH_A' });
+  const r = latestEurostat(decodeEurostat(j));
+  return r ? { value: pctSign(r.value), period: monthLabel(r[timeDimOf(j)]) + ' ggü. Vj.' } : null;
+});
+
+// ════════════════════════════════════════════════════════════════════
+// ÖFFENTLICHE FINANZEN — Staatsausgaben absolut
+// ════════════════════════════════════════════════════════════════════
+
+console.log('\n── Finanzen (ergänzend) ──────────────────────────────');
+
+// Staatsausgaben absolut (Mrd. €) via Eurostat gov_10a_main
+// na_item=TE = Total Expenditure, unit=MIO_EUR
+await tryUpdate('Staatsausgaben', async () => {
+  const j = await fetchEurostat('gov_10a_main', { geo: 'AT', sector: 'S13', unit: 'MIO_EUR', na_item: 'TE' });
+  const r = latestEurostat(decodeEurostat(j));
+  if (!r) return null;
+  const mrd = Math.round(r.value / 1000);
+  return { value: FMT.format(mrd) + ' Mrd. €', period: r[timeDimOf(j)] };
+});
 
 // ════════════════════════════════════════════════════════════════════
 // STATISTIK AUSTRIA
