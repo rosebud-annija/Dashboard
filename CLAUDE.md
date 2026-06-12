@@ -142,6 +142,44 @@ html = html.replace(old, new)
 
 Dark Mode: CSS-Variablen-Overrides unter `[data-theme="dark"]`. Persisted in `localStorage('aa-theme')`.
 
+### Kategorie-Farben
+
+Jede Kategorie hat eine eigene Akzentfarbe (definiert als `var CAT_COLORS` in `dashboard.js` und als CSS-Selektoren in `style.css`):
+
+| Kategorie | Farbe |
+|---|---|
+| Wirtschaft | `#009fe3` |
+| Arbeitsmarkt | `#a877b2` |
+| Preise & Inflation | `#006780` |
+| Öffentliche Finanzen | `#caa87d` |
+
+Diese Farben werden verwendet für:
+- **Karten-Stripe** (3px oben, `::before`) — via `[data-category="..."] .kpi-card::before`
+- **is-highlight Hintergrund** — eine Kachel pro Kategorie trägt `is-highlight` und wird in Kategorie-Farbe eingefärbt
+- **Filter-Button aktiv** — `.filter-btn.cat-w/a/p/f.active` in jeweiliger Kategorie-Farbe
+
+### Score-Farben (Zukunftswert)
+
+Score ≥60 → grün (`#8ccaae`) · 45–59 → gelb (`#f9b000`) · <45 → rot (`#e84e0f`)
+
+Diese Farben werden verwendet für:
+- **kpi-badge** (`badge-bad/neutral/good`) — Score-Farbe, weißer Hintergrund auf is-highlight-Kacheln
+- **chart-status Badge** — Score-Farbe
+- **Thermometer-Dots und -Werte** im Zukunftswert-Panel
+
+> **Wichtig:** Badge-Klassen im HTML sind veraltet — `syncScoresFromConfig()` korrigiert sie beim Laden automatisch aus `indikatoren.js`. Nie `badge-*` Klassen manuell im HTML setzen.
+
+### is-highlight
+
+Eine Kachel pro Kategorie trägt `.is-highlight` und zeigt die Kategorie-Farbe als Vollhintergrund. JS setzt CSS-Variablen via `applyHighlightStyle(card)`:
+
+| Variable | Zweck |
+|---|---|
+| `--highlight-bg` | Hintergrundfarbe (= Kategorie-Farbe) |
+| `--highlight-fg` | Textfarbe — weiß für dunkle Bg, dunkel für helle Bg (z.B. Finanzen-Beige) |
+| `--highlight-muted` | Gedämpfte Textfarbe (Labels, Subtexte) |
+| `--highlight-border` | Trennlinien-Farbe im Expand-Panel |
+
 ### Grid
 `repeat(8, 1fr)` — Kartenbreiten: `.col-1`=span1 · `.col-2`=span2 · `.col-3`=span3 · `.col-4`=span4. `.row-2` = doppelte Höhe. Status-Klassen: `.bad` · `.neutral` · `.good`.
 
@@ -157,21 +195,28 @@ Bei neuen Chart-Karten mit `style="grid-column: span N"` müssen Override-Regeln
 |---|---|
 | `INDIKATOREN` | Config aus `indikatoren.js` — Quelle für Scores, Quellen, Labels |
 | `SCORE_DATA` | Auto-generiert aus `INDIKATOREN` — Zukunftswert-Thermometer |
+| `CAT_COLORS` | `{ wirtschaft, arbeitsmarkt, preise, finanzen }` — Kategorie-Farbmap |
 | `D` (inside IIFE) | Expand-Panel-Texte: `{ 'Label': { e, vt, v, b } }` |
 
-**`syncDashboardStyles()`** — Karten-Status-Farben, Chart-Paletten, Thermometer-Fill.
+**`syncScoresFromConfig()`** — Liest Scores aus `INDIKATOREN`, setzt `data-score`, Karten-Klasse (bad/neutral/good) und `badge-*` Klasse neu. Muss nach `prepareThermoTargets()` aufgerufen werden.
 
-**`applyChartPaletteFromCard(card)`** — Chart-Farben = Karten-Status. Exceptions:
+**`syncDashboardStyles()`** — Badge-Arrows, is-highlight Kategorie-Farben, Chart-Paletten.
+
+**`applyHighlightStyle(card)`** — Setzt `--highlight-bg/fg/muted/border` CSS-Variablen basierend auf Kategorie-Farbe. Berechnet via `hexLuma()` ob heller oder dunkler Text besser lesbar ist.
+
+**`getCategoryColor(el)`** — Gibt Kategorie-Farbe für ein Element zurück (liest `[data-category]` Elternelement).
+
+**`applyChartPaletteFromCard(card)`** — Chart-Farben = Kategorie-Farbe. Exceptions:
 - `chart-handel` → immer `#e84e0f` (Exporte) + `PALETTE[3]` (Importe)
 - `chart-bevoelkerung` → immer `#009fe3` (Männer) + `#006780` (Frauen)
 
-**`refreshLiveData()`** — Client-seitiger Fallback: holt Eurostat-Daten direkt im Browser, max. 1× pro Woche (`localStorage('aa_refresh_week')`). Greift nur wenn `indikatoren.js` keine aktuellen Werte hat.
+**`refreshLiveData()`** — Client-seitiger Fallback: holt Eurostat-Daten direkt im Browser, max. 1× pro Woche (`localStorage('aa_refresh_week')`).
 
 **Expand Panels** — Klick auf Karte → span8, 3-spaltig: Einordnung / Vergleich / Bedeutung. Daten im `D`-Objekt im HTML (ca. Zeile 560.000).
 
 **Highlight-Systeme:**
-- `.is-highlight` — statisch, score-basiert
-- `.is-highlight-2` — dynamisch, Thermometer-Klick
+- `.is-highlight` — statisch, eine Kachel pro Kategorie in Kategorie-Farbe
+- `.is-highlight-2` — dynamisch, Thermometer-Klick in Score-Farbe
 
 ---
 
