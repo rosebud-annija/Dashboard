@@ -1,32 +1,119 @@
 # Agenda Austria Dashboard — Project Context
 
-## What This Is
+## Was es ist
 
-A single-page economic dashboard for Agenda Austria, displaying 37 KPI indicators across 4 categories (Wirtschaft, Arbeitsmarkt, Preise & Inflation, Öffentliche Finanzen). Built as a self-contained HTML file with embedded fonts, CSS, and JavaScript. Deployed to GitHub Pages.
-
-The original HTML was generated in full in a Cowork session (Anthropic's desktop Claude tool) and then iteratively patched using numbered Python scripts (`fix13.py`–`fix18.py`).
+Single-page Wirtschafts-Dashboard für Agenda Austria. 37 KPI-Indikatoren in 4 Kategorien (Wirtschaft, Arbeitsmarkt, Preise & Inflation, Öffentliche Finanzen). Deployed auf GitHub Pages.
 
 ---
 
-## Repository File Structure
+## Datei-Struktur
 
 ```
 /
-├── index.html             ← Main dashboard (rename agenda-austria-dashboard.html → index.html for GitHub Pages)
-├── indikatoren.js         ← Config: all 37 indicators, values, sources, scores — EDIT THIS for data updates
-├── CLAUDE.md              ← This file
-└── docs/
-    └── patches.md         ← History of all patches applied
+├── index.html                      ← Dashboard (self-contained HTML + CSS + JS)
+├── indikatoren.js                  ← Alle 37 Indikatoren: value, score, Quelle
+├── dashboard.js                    ← JS-Logik
+├── panel-texte.js                  ← Expand-Panel-Texte
+├── quellen.js                      ← Quellenverzeichnis + Eurostat-Live-Config
+├── style.css                       ← Stylesheet
+├── scripts/
+│   └── update-indicators.mjs      ← Wöchentliches Fetch-Skript (GitHub Actions)
+└── .github/workflows/
+    └── weekly-update.yml           ← Cron: jeden Montag
 ```
 
-The dashboard HTML references `indikatoren.js` via `<script src="indikatoren.js"></script>`. Both files must be served from the same directory.
+`index.html` lädt `indikatoren.js` via `<script src="indikatoren.js">`. Beide müssen im selben Verzeichnis liegen.
 
 ---
 
-## How to Make Changes
+## Daten-Update
 
-### Patching convention
-All code changes are made via Python patch scripts using exact string replacement with assertions:
+### Automatisch — jeden Montag via GitHub Actions
+
+`scripts/update-indicators.mjs` holt aktuelle Werte von **Eurostat API** und schreibt sie in `indikatoren.js` zurück. GitHub Actions committet und pusht automatisch.
+
+**Manuell auslösen:** GitHub → Actions → „Wöchentliches Daten-Update" → Run workflow
+
+#### Automatisch aktualisierte Indikatoren (27 von 37)
+
+| Kategorie | Indikator | Eurostat-Dataset |
+|---|---|---|
+| Wirtschaft | Bevölkerung | `demo_gind` indic_de=JAN |
+| | BIP-Wachstum real | `tec00115` |
+| | BIP nominal | `namq_10_gdp` |
+| | BIP pro Kopf | `nama_10_pc` |
+| | Exporte (Waren) | `nama_10_gdp` P6 |
+| | Importe | `nama_10_gdp` P7 |
+| | Lohnstückkosten | `namq_10_lp_ulc` |
+| | Bruttoanlageinvestitionen | `nama_10_gdp` P51G |
+| | Industriestrompreis | `nrg_pc_205` |
+| Arbeitsmarkt | Unselbst. Beschäftigte | `lfsq_egaps` |
+| | ALQ Eurostat (ILO) | `une_rt_m` |
+| | Jugend-ALQ | `une_rt_a` |
+| | Teilzeitquote | `lfsi_pt_a` |
+| | Geleistete Arbeitsstunden | `nama_10_a10_e` |
+| Preise | VPI / Inflation | `prc_hicp_manr` CP00 |
+| | HVPI | `prc_hicp_manr` CP00 |
+| | Immobilienpreisindex | `prc_hpi_q` |
+| | Mietentwicklung | `prc_hicp_manr` CP041 |
+| | Energiepreise | `prc_hicp_cann` CP045 |
+| Finanzen | Staatsschuldenquote | `gov_10dd_edpt1` GD |
+| | Staatsdefizit | `gov_10dd_edpt1` B9 |
+| | Staatsquote | `gov_10a_main` TE |
+| | Staatseinnahmen | `gov_10a_main` TR |
+| | Zinsausgaben | `gov_10a_main` D41PAY |
+| | Abgabenquote | `gov_10a_taxag` |
+| | Staatsausgaben | `gov_10a_main` TE (MIO_EUR) |
+
+### Manuell zu pflegen (10 Indikatoren)
+
+| Indikator | Quelle | Warum kein API |
+|---|---|---|
+| Insolvenzen | Statistik Austria | HTML-Scraping unzuverlässig |
+| Direktinvestitionen | OeNB | Eurostat `bop_fdi6_pos` zu groß (HTTP 413) |
+| Business Climate | WIFO-Konjunkturtest | Kein offener API |
+| ALQ national | AMS | Österr. Methode, kein Eurostat-Äquivalent |
+| Reallöhne | AMECO | Kein Eurostat-Äquivalent |
+| Arbeitskosten / Std. | Eurostat (manuell) | Kein EUR/h-Dataset verfügbar |
+| Sozialquote | Statistik Austria | ESSPROS-Dataset nicht im API |
+| Faktisches Pensionsalter | OECD | OECD-API komplex, kein Eurostat |
+| Steuerkeil | OECD Taxing Wages | OECD-API, kein Eurostat |
+| Pensionslücke | Agenda Austria intern | Interne Berechnung |
+| Budgetvollzug | BMF | Kein API |
+
+**Manuell aktualisieren:** Admin Panel → Kategorie → Wert eintragen → Speichern
+
+### Score anpassen
+
+Score (0–100) wird nie automatisch gesetzt. Nach jeder Wert-Änderung manuell im Admin Panel beurteilen: ≥60 grün · 45–59 gelb · <45 rot.
+
+---
+
+## Indikatoren-Konfiguration (`indikatoren.js`)
+
+Jeder Indikator hat folgende Felder:
+
+```js
+{
+  label:       'BIP-Wachstum real',   // Anzeigename (muss mit tryUpdate-Label übereinstimmen)
+  value:       '+0,5 %',              // Anzeigewert — wird vom Skript überschrieben
+  data_period: '2025',                // Zeitraum — wird vom Skript überschrieben
+  score:       35,                    // 0–100, immer manuell setzen
+  source_name: 'Eurostat',            // Erscheint als Link-Text im Dashboard
+  source_url:  'https://...',         // Direkt-URL zur Quelle
+  eurostat_id: 'tec00115',           // Dataset-ID (leer wenn kein Eurostat)
+  update:      'jährlich',            // monatlich | quartalsweise | halbjährlich | jährlich
+  notes:       '...',                 // Interne Notizen, nicht im Dashboard sichtbar
+}
+```
+
+Manuelle Wert-Aktualisierung: nur `value`, `data_period`, `score` ändern — keine HTML-Änderung nötig.
+
+---
+
+## Code-Änderungen am Dashboard (index.html)
+
+Alle Änderungen via Python-Skript mit exaktem String-Replacement:
 
 ```python
 old = '  background: #ffffff;\n'
@@ -35,188 +122,81 @@ assert html.count(old) == 1, f"expected 1, got {html.count(old)}"
 html = html.replace(old, new)
 ```
 
-**Never use regex on the main HTML** — the embedded base64 fonts make regex slow and unreliable. Always use `str.replace()` with `assert count == 1` to guarantee safe, targeted edits.
-
-Name scripts sequentially: `fix19.py`, `fix20.py`, etc.
-
-### Updating indicator data
-Edit `indikatoren.js` only — no HTML changes needed. Each indicator has:
-- `value` — display value (e.g. `'−0,7 %'`)
-- `data_period` — time period of the value (e.g. `'März 2026'`)
-- `score` — Zukunftswert score 0–100 (≥60 green, 45–59 yellow, <45 red)
-- `source_name` / `source_url` — shown as clickable link in card footer
+**Nie Regex auf dem HTML** — eingebettete Base64-Fonts machen Regex langsam und fehleranfällig. Skripte sequenziell nummerieren: `fix32.py`, `fix33.py`, …
 
 ---
 
-## CSS Architecture
+## CSS-Architektur
 
-### Design tokens (`:root`)
+### Design Tokens (`:root`)
 ```css
---dunkelblau: #27348b   /* brand / header */
---mint:       #8ccaae   /* good/green */
---orange:     #e84e0f   /* bad/red */
---gelb:       #f9b000   /* neutral/yellow */
---petrol:     #006780
---violett:    #a877b2
---bg:         #f0f2f8   /* page background */
---card:       #ffffff   /* card background */
+--dunkelblau: #27348b   /* Brand / Header */
+--mint:       #8ccaae   /* gut / grün */
+--orange:     #e84e0f   /* schlecht / rot */
+--gelb:       #f9b000   /* neutral / gelb */
+--bg:         #f0f2f8   /* Seitenhintergrund */
+--card:       #ffffff   /* Karten-Hintergrund */
 --text:       #14193a
 --muted:      #5a6890
---bad:        #e84e0f
---good:       #8ccaae
---neutral-c:  #f9b000
 ```
 
-Dark mode overrides live under `[data-theme="dark"]` (see dark mode section below).
+Dark Mode: CSS-Variablen-Overrides unter `[data-theme="dark"]`. Persisted in `localStorage('aa-theme')`.
 
-### Grid system
-The KPI grid is `repeat(8, 1fr)` with four card width classes:
-- `.col-1` → `span 1` (narrow stat)
-- `.col-2` → `span 2` (standard stat)
-- `.col-3` → `span 3` (wide stat)
-- `.col-4` → `span 4` (half-width chart)
-- Some chart cards use inline `style="grid-column: span N"` for non-standard widths
+### Grid
+`repeat(8, 1fr)` — Kartenbreiten: `.col-1`=span1 · `.col-2`=span2 · `.col-3`=span3 · `.col-4`=span4. `.row-2` = doppelte Höhe. Status-Klassen: `.bad` · `.neutral` · `.good`.
 
-`.row-2` makes a card double-height (`grid-row: span 2`).
+Responsive Breakpoints: ≤767px (Mobile, alle Karten span8) · ≤1200px (Tablet, 2-spaltig) · ≤1500px (13"-Laptop, kleinere Schrift).
 
-Card status classes: `.bad`, `.neutral`, `.good` — these drive background color via CSS variables.
-
-### Responsive breakpoints
-| Breakpoint | Behavior |
-|---|---|
-| `≤767px` | Mobile: all cards full-width (span 8), charts hidden |
-| `≤1200px` | Tablet: 2-column layout, col-N all become span 4 |
-| `≤1500px` | 13" laptop: slightly smaller font sizes (kpi-value 28–34px) |
-| `≥1600px` | Wide: currently no special grid override (was added then removed per user request) |
-
-When adding new chart cards with inline `style="grid-column: span N"`, you must add matching override rules in **both** the `≤1200px` and `≤767px` media query blocks, e.g.:
-```css
-/* ≤1200px */
-.kpi-grid > [style*="grid-column: span 5"] { grid-column: span 4 !important; }
-/* ≤767px */
-.kpi-grid > [style*="grid-column: span 5"] { grid-column: span 8 !important; }
-```
+Bei neuen Chart-Karten mit `style="grid-column: span N"` müssen Override-Regeln in **beiden** Media Queries ergänzt werden.
 
 ---
 
-## JavaScript Architecture
+## JavaScript-Architektur
 
-### Key globals
-
-| Name | Purpose |
+| Name | Zweck |
 |---|---|
-| `INDIKATOREN` | Config object from `indikatoren.js` — source of truth for scores, sources, labels |
-| `SCORE_DATA` | Auto-generated from `INDIKATOREN` — drives Zukunftswert thermometer |
-| `D` (inside IIFE) | Expand panel data: `{ 'Label': { e, vt, v, b } }` for all 37 cards |
-| `_activeThermo` | Tracks currently highlighted thermometer row + card |
+| `INDIKATOREN` | Config aus `indikatoren.js` — Quelle für Scores, Quellen, Labels |
+| `SCORE_DATA` | Auto-generiert aus `INDIKATOREN` — Zukunftswert-Thermometer |
+| `D` (inside IIFE) | Expand-Panel-Texte: `{ 'Label': { e, vt, v, b } }` |
 
-### Core functions
+**`syncDashboardStyles()`** — Karten-Status-Farben, Chart-Paletten, Thermometer-Fill.
 
-**`syncDashboardStyles()`** — called on load and after any state change. Applies card status colors, calls `applyChartPaletteFromCard()` for each chart card, updates Zukunftswert thermometer fill.
+**`applyChartPaletteFromCard(card)`** — Chart-Farben = Karten-Status. Exceptions:
+- `chart-handel` → immer `#e84e0f` (Exporte) + `PALETTE[3]` (Importe)
+- `chart-bevoelkerung` → immer `#009fe3` (Männer) + `#006780` (Frauen)
 
-**`applyChartPaletteFromCard(card)`** — syncs a chart's dataset colors to match the card's current status color. Has named exceptions:
-- `chart-handel` — always uses `#e84e0f` (Exporte) and `PALETTE[3]` (Importe)
-- `chart-bevoelkerung` — always uses `#009fe3` (Männer) and `#006780` (Frauen)
-  - ⚠️ If you add more chart cards, add exceptions here if they need fixed colors independent of status
+**`refreshLiveData()`** — Client-seitiger Fallback: holt Eurostat-Daten direkt im Browser, max. 1× pro Woche (`localStorage('aa_refresh_week')`). Greift nur wenn `indikatoren.js` keine aktuellen Werte hat.
 
-**`refreshLiveData()`** — async, fetches live data from Eurostat API. Called once per week (checked via `localStorage('aa_refresh_week')`). Live datasets:
-- `tec00115` → BIP-Wachstum real
-- `une_rt_m` → ALQ Eurostat (ILO)
-- `prc_hicp_minr` → HVPI (monthly)
-- `prc_hicp_manr` → HVPI (annual)
-- `prc_hpi_q` → Immobilienpreisindex
-- `gov_10dd_edpt1` → Staatsschuldenquote
+**Expand Panels** — Klick auf Karte → span8, 3-spaltig: Einordnung / Vergleich / Bedeutung. Daten im `D`-Objekt im HTML (ca. Zeile 560.000).
 
-**`prepareThermoTargets()`** — sets `data-thermo-key` on every `.kpi-card` (normalized label for fuzzy matching).
-
-**`syncSourceLinksFromConfig()`** — updates all `a.kpi-detail` links from `INDIKATOREN` config. Called after `prepareThermoTargets()`.
-
-**`normalizeThermoLabel(value)`** — normalizes German labels for fuzzy matching (ä→ae, removes parens, etc.). Used by thermometer click handler and `syncSourceLinksFromConfig`.
-
-### Expand panels (in-place)
-Each card is clickable and expands to `span 8` showing a 3-column panel:
-- **Einordnung** — contextual text
-- **Vergleich** — horizontal bar chart comparing Austria to other countries/metrics
-- **Bedeutung** — policy significance text
-
-Panel data lives in the `D` object inside the expand IIFE (around line 560,000 in the HTML). Structure:
-```js
-D['Label'] = {
-  e: 'Einordnung text...',
-  vt: 'Vergleich title',
-  v: [{n:'Österreich', v:'9,22 Mio.', w:11, c:''}, ...],  // w=bar width%, c=highlight class
-  b: 'Bedeutung text...'
-};
-```
-
-### Dark mode
-Toggled via `data-theme="dark"` on `<html>`. CSS variables are overridden under `[data-theme="dark"]`. Persisted in `localStorage('aa-theme')`.
-
-`syncCharts()` — called on theme toggle, updates all Chart.js scale/tick/legend colors to match current CSS variable values.
-
-### Highlight systems (two distinct mechanisms)
-1. **`.is-highlight`** — static score-based coloring applied by `syncDashboardStyles()` when a card's score is extreme
-2. **`.is-highlight-2`** — dynamic, applied when user clicks a thermometer row. Sets inline `background` + CSS custom properties (`--hl2-text`, `--hl2-muted`, etc.)
-
-Both require identical CSS rules for white text on colored backgrounds. If you add new text elements inside `.kpi-card`, add rules for both:
-```css
-.is-highlight .new-element,
-.is-highlight-2 .new-element { color: var(--hl2-text, #fff) !important; }
-```
+**Highlight-Systeme:**
+- `.is-highlight` — statisch, score-basiert
+- `.is-highlight-2` — dynamisch, Thermometer-Klick
 
 ---
 
 ## Chart Canvas IDs
 
-| Canvas ID | Indicator |
+| ID | Indikator |
 |---|---|
-| `chart-bevoelkerung` | Bevölkerung (stacked bar: Männer/Frauen) |
+| `chart-bevoelkerung` | Bevölkerung |
 | `chart-bip` | BIP-Wachstum real |
-| `chart-handel` | Exporte/Importe (two datasets) |
+| `chart-handel` | Exporte / Importe |
 | `chart-alq` | Arbeitslosenquote national |
-| `chart-stellen` | (open positions / job market) |
-| `chart-pensionsalter` | Faktisches Pensionsalter |
 | `chart-inflation` | VPI / Inflation |
 | `chart-immo` | Immobilienpreisindex |
 | `chart-energie` | Energiepreise |
 | `chart-schulden` | Staatsschuldenquote |
-| `chart-quoten` | (quota comparison) |
-| `chart-aufgaben` | (expenditure breakdown) |
-
----
-
-## Header / Footer
-
-The header contains:
-- Agenda Austria branding + logo (inline SVG + base64 font)
-- Dark mode toggle button (`#theme-toggle`) with sun/moon SVG icons
-- A centered "Quelldaten zuletzt abgerufen" bar showing last data refresh timestamp
-
-The footer shows: `Stand: April 2026 · Alle Angaben in % des BIP soweit nicht anders vermerkt`
-
----
-
-## Known Issues / Pending Work
-
-1. **Server-side weekly data refresh** — Currently each client browser fetches Eurostat data once per week via `localStorage`. The user wanted centralized weekly fetching (so the HTML always has fresh data without client-side API calls). Architecture discussed: GitHub Actions workflow that runs weekly, fetches data, updates `indikatoren.js`, commits and pushes. Not yet implemented.
-
-2. **`indikatoren.js` not yet wired to expand panel data** — The `D` object inside the expand IIFE still has hardcoded Einordnung/Vergleich/Bedeutung text. These could optionally be moved into `indikatoren.js` as well.
-
-3. **`indikatoren.js` not yet wired to chart time-series data** — Chart data arrays (year-by-year series) are still hardcoded in the HTML. Only live-fetched Eurostat charts update dynamically.
 
 ---
 
 ## Deployment
 
-Hosted on GitHub Pages. Repository should have both `index.html` (renamed from `agenda-austria-dashboard.html`) and `indikatoren.js` in the root.
+GitHub Pages — `index.html` + `indikatoren.js` im Root.
 
-To deploy an update:
-1. Edit `indikatoren.js` with new values
-2. `git add indikatoren.js && git commit -m "Update indicators April 2026" && git push`
-3. GitHub Pages rebuilds automatically (~60 seconds)
+```bash
+git add indikatoren.js && git commit -m "Update indicators" && git push
+# → GitHub Pages rebuild ~60 Sekunden
+```
 
----
-
-## Patch History Summary
-
-See `docs/patches.md` for full details. Patches applied in this session: fix13–fix18.
+GitHub Actions aktualisiert `indikatoren.js` automatisch jeden Montag.
