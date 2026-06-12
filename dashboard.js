@@ -314,6 +314,7 @@ bindThermoLinks();
 var tC = '#8090b8';
 var gC = 'rgba(39,52,139,0.07)';
 var PALETTE = ['#009fe3', '#a877b2', '#006780', '#caa87d'];
+var CAT_COLORS = { wirtschaft: '#009fe3', arbeitsmarkt: '#a877b2', preise: '#006780', finanzen: '#caa87d' };
 
 function hexToRgba(hex, alpha) {
   var h = hex.replace('#', '');
@@ -686,8 +687,6 @@ function hexLuma(hex) {
   });
   return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
 }
-
-var CAT_COLORS = { wirtschaft: '#009fe3', arbeitsmarkt: '#a877b2', preise: '#006780', finanzen: '#caa87d' };
 
 function getCategoryColor(el) {
   var section = el && el.closest('[data-category]');

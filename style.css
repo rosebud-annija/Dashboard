@@ -323,7 +323,6 @@ a.kpi-detail:hover { color: var(--hellblau); text-decoration: underline; }
 .is-highlight a.kpi-detail:hover {
   color: var(--highlight-fg, #fff);
 }
-.is-highlight .kpi-badge,
 .is-highlight .chart-status {
   background: var(--highlight-chip-bg, rgba(255,255,255,0.16)) !important;
   color: var(--highlight-chip-fg, #fff) !important;
