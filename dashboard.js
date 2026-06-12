@@ -97,6 +97,35 @@ function syncValuesFromConfig() {
   });
 }
 
+function syncScoresFromConfig() {
+  if (typeof INDIKATOREN === 'undefined') return;
+  Object.keys(INDIKATOREN).forEach(function(cat) {
+    INDIKATOREN[cat].items.forEach(function(item) {
+      if (typeof item.score === 'undefined') return;
+      var key = normalizeThermoLabel(item.label);
+      var card = document.querySelector('.kpi-card[data-thermo-key="' + key + '"]');
+      if (!card) {
+        var all = Array.prototype.slice.call(document.querySelectorAll('.kpi-card'));
+        card = all.find(function(c) {
+          var lbl = c.querySelector('.kpi-label');
+          return lbl && normalizeThermoLabel(lbl.textContent) === key;
+        }) || null;
+      }
+      if (!card) return;
+      var score = item.score;
+      var statusCls = score >= 60 ? 'good' : score >= 45 ? 'neutral' : 'bad';
+      card.dataset.score = score;
+      card.classList.remove('bad', 'good', 'neutral');
+      card.classList.add(statusCls);
+      var badge = card.querySelector('.kpi-badge');
+      if (badge) {
+        badge.classList.remove('badge-bad', 'badge-good', 'badge-neutral');
+        badge.classList.add('badge-' + statusCls);
+      }
+    });
+  });
+}
+
 function prepareThermoTargets() {
   document.querySelectorAll('.kpi-card').forEach(function(card) {
     var labelEl = card.querySelector('.kpi-label');
@@ -229,6 +258,7 @@ var col = scoreColor(overall);
 prepareThermoTargets();
 syncValuesFromConfig();
 syncSourceLinksFromConfig();
+syncScoresFromConfig();
 
 // Ticks
 var ticksEl = document.getElementById('thermo-ticks');
