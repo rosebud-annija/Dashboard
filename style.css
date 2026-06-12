@@ -296,15 +296,40 @@ a.kpi-detail:hover { color: var(--hellblau); text-decoration: underline; }
   margin-top: auto;
   align-self: flex-start;
 }
-/* score-based badge colors removed — category colors below */
-.category-section[data-category="wirtschaft"]  .kpi-badge { background: rgba(0,159,227,0.12);   color: #009fe3; }
-.category-section[data-category="arbeitsmarkt"] .kpi-badge { background: rgba(168,119,178,0.14); color: #a877b2; }
-.category-section[data-category="preise"]       .kpi-badge { background: rgba(0,103,128,0.12);   color: #006780; }
-.category-section[data-category="finanzen"]     .kpi-badge { background: rgba(202,168,125,0.18); color: #9a7840; }
+.badge-bad     { background: var(--bad-dim);  color: var(--bad); }
+.badge-good    { background: var(--good-dim); color: #2a8a68; }
+.badge-neutral { background: var(--neu-dim);  color: #c28a00; }
 
-/* .is-highlight background coloring removed — score-based card backgrounds no longer used */
 .is-highlight {
-  box-shadow: 0 8px 28px rgba(39,52,139,0.13);
+  background: var(--highlight-bg, var(--dunkelblau));
+  border-color: var(--highlight-bg, var(--dunkelblau));
+  box-shadow: 0 8px 28px var(--highlight-shadow, rgba(39,52,139,0.18));
+}
+.is-highlight::before {
+  display: none !important;
+}
+.is-highlight .kpi-label,
+.is-highlight .kpi-value,
+.is-highlight .kpi-value .unit,
+.is-highlight .kpi-note,
+.is-highlight .kpi-detail,
+.is-highlight .chart-title {
+  color: var(--highlight-fg, #fff);
+}
+.is-highlight .kpi-label,
+.is-highlight .chart-title {
+  color: var(--highlight-muted, rgba(255,255,255,0.78));
+}
+.is-highlight a.kpi-detail:hover {
+  color: var(--highlight-fg, #fff);
+}
+.is-highlight .kpi-badge,
+.is-highlight .chart-status {
+  background: var(--highlight-chip-bg, rgba(255,255,255,0.16)) !important;
+  color: var(--highlight-chip-fg, #fff) !important;
+}
+.is-highlight canvas {
+  filter: saturate(1.02);
 }
 
 /* ── CHART CARD ── */
@@ -1017,7 +1042,40 @@ footer {
 
 /* ── EXPAND IN-PLACE (Option 3) ── */
 
-/* is-highlight expand panel overrides removed — no longer colored background */
+/* White text when card has a colored background (is-highlight) */
+.is-highlight .kpi-expand-panel {
+  border-top-color: rgba(255,255,255,0.25);
+}
+.is-highlight .kep-title {
+  color: rgba(255,255,255,0.65);
+}
+.is-highlight .kep-text,
+.is-highlight .kep-bar-val {
+  color: #ffffff;
+}
+.is-highlight .kep-bar-val.bad,
+.is-highlight .kep-bar-val.good {
+  color: #ffffff;
+}
+.is-highlight .kep-bar-name {
+  color: rgba(255,255,255,0.75);
+}
+.is-highlight .kep-bar-track {
+  background: rgba(255,255,255,0.18);
+}
+.is-highlight .kep-bar-fill,
+.is-highlight .kep-bar-fill.bad,
+.is-highlight .kep-bar-fill.good,
+.is-highlight .kep-bar-fill.neu {
+  background: rgba(255,255,255,0.70);
+}
+.is-highlight .kep-close {
+  color: rgba(255,255,255,0.70);
+}
+.is-highlight .kep-close:hover {
+  background: rgba(255,255,255,0.15);
+  color: #ffffff;
+}
 
 .kpi-card {
   cursor: pointer;

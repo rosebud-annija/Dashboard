@@ -694,6 +694,22 @@ function getCategoryColor(el) {
   return section ? (CAT_COLORS[section.dataset.category] || PALETTE[0]) : PALETTE[0];
 }
 
+function applyHighlightStyle(card) {
+  if (!card || !card.classList.contains('is-highlight')) return;
+  var bg = getCategoryColor(card);
+  var luma = hexLuma(bg);
+  var useDarkText = luma > 0.35;
+  var fg = useDarkText ? '#14193a' : '#ffffff';
+  var muted = useDarkText ? 'rgba(20,25,58,0.62)' : 'rgba(255,255,255,0.78)';
+  var chipBg = useDarkText ? 'rgba(20,25,58,0.12)' : 'rgba(255,255,255,0.20)';
+  card.style.setProperty('--highlight-bg', bg);
+  card.style.setProperty('--highlight-fg', fg);
+  card.style.setProperty('--highlight-muted', muted);
+  card.style.setProperty('--highlight-shadow', 'rgba(39,52,139,0.18)');
+  card.style.setProperty('--highlight-chip-bg', chipBg);
+  card.style.setProperty('--highlight-chip-fg', fg);
+}
+
 function ensureBadgeArrow(badge) {
   if (!badge) return;
   var txt = badge.textContent.trim();
@@ -739,6 +755,7 @@ function applyChartPaletteFromCard(card) {
 
 function syncDashboardStyles() {
   document.querySelectorAll('.kpi-badge, .chart-status').forEach(ensureBadgeArrow);
+  document.querySelectorAll('.kpi-card.is-highlight').forEach(applyHighlightStyle);
   document.querySelectorAll('.chart-card').forEach(applyChartPaletteFromCard);
 }
 
